@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuvraj Singh Tomar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+</head>
+<body class="bg-gray-900">
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10"></div>
+
+    <div class="container mx-auto p-4 md:p-6 relative">
+        <!-- Navbar with Glass Effect -->
+        <nav class="bg-white/5 backdrop-blur-lg p-4 rounded-lg shadow-2xl mb-6 flex flex-col md:flex-row justify-between items-center border border-white/10">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYCiIf8E2L836u62DMth4Mj1Z7_BMi-Ezw4ApU5YNUtIHbvsK9-dJDqEmdUhlQlaqJlJQ&usqp=CAU" alt="Logo" class="w-30 h-20 mr-2">
+                <a href="#" class="text-white text-xl font-bold neon-text">DVertex Info System</a>
+            </div>
+            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                <a href="FORM.HTML" class="text-white px-4 py-2 bg-blue-500/30 rounded-lg hover:bg-blue-500/50 transition duration-300 border border-blue-400/30">Submit Feedback</a>
+                <a href="display.html" class="text-white px-4 py-2 bg-green-500/30 rounded-lg hover:bg-green-500/50 transition duration-300 border border-green-400/30">View Feedback</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section with Floating 3D Card -->
+        <div class="bg-white/5 backdrop-blur-lg shadow-2xl rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center text-center md:text-left border border-white/10 relative overflow-hidden">
+            <!-- Floating Sphere -->
+            <div id="floating-sphere" class="absolute w-32 h-32 -top-16 -left-16 opacity-20"></div>
+            
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMc2u6k1WlVruEa29a1pKbpeVPLgoNs_kRkGuLxvo_Q_gEvTuw3pfdCfvOBAcVnQKR4P0&usqp=CAU" 
+                 alt="Profile" 
+                 class="w-32 h-32 md:w-40 md:h-40 rounded-full shadow-xl mb-6 md:mb-0 md:mr-6 border-4 border-white/20">
+            <div class="relative">
+                <h1 class="text-3xl font-bold text-white mb-2">Yuvraj Singh Tomar</h1>
+                <p class="text-blue-400 mb-4">IT Support Engineer</p>
+                <p class="text-gray-300 mb-6">Passionate about technology and problem-solving. Open to feedback and collaboration.</p>
+                <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                    <a href="FORM.HTML" class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">Submit Feedback</a>
+                    <a href="display.html" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300 transform hover:scale-105">View Feedback</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="bg-white/5 backdrop-blur-lg shadow-2xl rounded-lg p-6 md:p-8 mt-6 text-center border border-white/10">
+            <h2 class="text-xl font-bold text-white mb-4">🚀 About InsightFlow: Empowering Feedback for Growth</h2>
+            <ul class="text-gray-300 mt-4 text-left max-w-2xl mx-auto">
+                <li class="mb-2"><strong>✅ Driven by Improvement:</strong> Evolving based on valuable insights.</li>
+                <li class="mb-2"><strong>✅ Your Voice Shapes Us:</strong> Suggestions fine-tune our services.</li>
+                <li class="mb-2"><strong>✅ Seamless & User-Friendly:</strong> Easy and intuitive design.</li>
+                <li class="mb-2"><strong>✅ Real Impact, Real Change:</strong> Directly influences future improvements.</li>
+                <li class="mb-2"><strong>✅ Transparency & Trust:</strong> Open communication and trust-building.</li>
+            </ul>
+        </div>
+
+        <!-- Features Section with Images -->
+        <div class="bg-white/5 backdrop-blur-lg shadow-2xl rounded-lg p-6 md:p-8 mt-6 text-center border border-white/10">
+            <h2 class="text-xl font-bold text-white mb-6">Why Choose InsightFlow?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Feature 1: Easy to Use -->
+                <div class="bg-gray-800/30 p-6 rounded-xl border border-white/10 hover:border-blue-400/50 transition-all duration-300 relative">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135810.png" alt="Easy to Use" class="w-24 h-24 mx-auto mb-4">
+                    <h3 class="text-lg font-semibold text-white mb-2">Easy to Use</h3>
+                    <p class="text-gray-300">User-friendly and intuitive platform.</p>
+                </div>
+
+                <!-- Feature 2: Real-Time Updates -->
+                <div class="bg-gray-800/30 p-6 rounded-xl border border-white/10 hover:border-green-400/50 transition-all duration-300 relative">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Real-Time Updates" class="w-24 h-24 mx-auto mb-4">
+                    <h3 class="text-lg font-semibold text-white mb-2">Real-Time Updates</h3>
+                    <p class="text-gray-300">View feedback instantly.</p>
+                </div>
+
+                <!-- Feature 3: Your Voice Matters -->
+                <div class="bg-gray-800/30 p-6 rounded-xl border border-white/10 hover:border-purple-400/50 transition-all duration-300 relative">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Your Voice Matters" class="w-24 h-24 mx-auto mb-4">
+                    <h3 class="text-lg font-semibold text-white mb-2">Your Voice Matters</h3>
+                    <p class="text-gray-300">Every piece of feedback helps us improve.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white text-center p-4 mt-6 rounded-lg">
+        <p>&copy; 2025 InsightFlow. All Rights Reserved. Powered by DVertex Info System.</p>
+    </footer>
+
+    <script>
+        // Initialize Three.js Scene
+        let scene, camera, renderer, particles;
+
+        function initThreeJS() {
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Add floating particles
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            for (let i = 0; i < 5000; i++) {
+                vertices.push(
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.PointsMaterial({ size: 2, color: 0x00aaff });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.z = 1000;
+
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.x += 0.0001;
+                particles.rotation.y += 0.0001;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Initialize floating animations
+        function initAnimations() {
+            gsap.to("#floating-sphere", {
+                duration: 3,
+                y: "+=50",
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+        }
+
+        // Initialize everything
+        window.onload = () => {
+            initThreeJS();
+            initAnimations();
+        };
+    </script>
+
+    <style>
+        .neon-text {
+            text-shadow: 0 0 10px #00aaff,
+                         0 0 20px #00aaff,
+                         0 0 30px #00aaff;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Feedback - InsightFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        .neon-text {
+            text-shadow: 0 0 10px #00aaff,
+                         0 0 20px #00aaff,
+                         0 0 30px #00aaff;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10"></div>
+
+    <!-- Navbar -->
+    <nav class="glass-card p-4 rounded-lg shadow-2xl mb-6 mx-4 md:mx-6 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="IMAGES/logo.png" alt="Logo" class="w-20 h-10 mr-2">
+            <a href="#" class="text-white text-xl font-bold neon-text">InsightFlow</a>
+        </div>
+        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+            <a href="FORM.HTML" class="text-white px-4 py-2 bg-blue-500/30 rounded-lg hover:bg-blue-500/50 transition duration-300 border border-blue-400/30">Submit Feedback</a>
+            <a href="display.html" class="text-white px-4 py-2 bg-green-500/30 rounded-lg hover:bg-green-500/50 transition duration-300 border border-green-400/30">View Feedback</a>
+        </div>
+    </nav>
+
+    <!-- Reviews Section -->
+    <div class="container mx-auto p-4 md:p-6">
+        <h2 class="text-3xl font-bold text-center mb-8 neon-text">Feedback Reviews</h2>
+
+        <!-- Dynamic Designation Based Reviews -->
+        <div id="reviewsContainer" class="space-y-6"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-card mt-12 p-4 rounded-lg mx-4 md:mx-6 text-center">
+        <p class="text-gray-400">&copy; 2025 InsightFlow. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Firebase and Three.js Scripts -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8XIXxe2cBliFB4HN2C8GsYpQ1beErPv8",
+            authDomain: "insightflow-81a03.firebaseapp.com",
+            databaseURL: "https://insightflow-81a03-default-rtdb.firebaseio.com",
+            projectId: "insightflow-81a03",
+            storageBucket: "insightflow-81a03.appspot.com",
+            messagingSenderId: "111041243564",
+            appId: "1:111041243564:web:f9348e510ea7e1e7e13209",
+            measurementId: "G-P0HQ3MXXV1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Three.js Background
+        let scene, camera, renderer, particles;
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Particles
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            for (let i = 0; i < 5000; i++) {
+                vertices.push(
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.PointsMaterial({ size: 2, color: 0x00aaff });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.z = 1000;
+
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.x += 0.00023;
+                particles.rotation.y += 0.00023;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Load reviews
+        function loadReviews() {
+            db.ref('feedbacks').once('value', (snapshot) => {
+                const reviewsData = snapshot.val();
+                if (!reviewsData) return;
+
+                const groupedReviews = {
+                    "Project Head": [],
+                    "Operations Manager": [],
+                    "Zonal Manager": [],
+                    "Supervisor": [],
+                    "Colleague": []
+                };
+
+                for (let key in reviewsData) {
+                    const review = reviewsData[key];
+                    if (groupedReviews[review.designation]) {
+                        groupedReviews[review.designation].push(review);
+                    }
+                }
+
+                const reviewsContainer = document.getElementById('reviewsContainer');
+                reviewsContainer.innerHTML = '';
+
+                for (let designation in groupedReviews) {
+                    const reviews = groupedReviews[designation];
+                    if (reviews.length > 0) {
+                        const section = document.createElement('div');
+                        section.className = 'glass-card p-6 rounded-xl mb-6';
+                        
+                        const header = document.createElement('h3');
+                        header.className = 'text-2xl font-bold mb-4 text-blue-400';
+                        header.textContent = `${designation} (${reviews.length} Reviews)`;
+                        
+                        section.appendChild(header);
+
+                        reviews.forEach(review => {
+                            const card = document.createElement('div');
+                            card.className = 'glass-card p-4 rounded-lg mb-4';
+                            card.innerHTML = `
+                                <h4 class="text-xl font-semibold text-white mb-2">${review.name}</h4>
+                                <p class="text-gray-400 mb-2">${review.email}</p>
+                                <p class="text-gray-300">${review.feedback}</p>
+                            `;
+                            section.appendChild(card);
+                        });
+
+                        reviewsContainer.appendChild(section);
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        window.onload = () => {
+            initThreeJS();
+            loadReviews();
+        };
+    </script>
+</body>
+</html>

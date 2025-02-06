@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback - InsightFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        .neon-text {
+            text-shadow: 0 0 10px #00aaff,
+                         0 0 20px #00aaff,
+                         0 0 30px #00aaff;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #06fb99;
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00aaff;
+            box-shadow: 0 0 10px #00aaff;
+        }
+
+        .form-label {
+            color: #00aaff;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00aaff, #0077ff);
+            border: none;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00aaff;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container" class="fixed top-0 left-0 w-full h-full -z-10"></div>
+
+    <!-- Navbar -->
+    <nav class="glass-card p-4 rounded-lg shadow-2xl mb-6 mx-4 md:mx-6 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="IMAGES/logo.png" alt="Logo" class="w-20 h-10 mr-2">
+            <a href="#" class="text-white text-xl font-bold neon-text">InsightFlow</a>
+        </div>
+        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+            <a href="FORM.HTML" class="text-white px-4 py-2 bg-blue-500/30 rounded-lg hover:bg-blue-500/50 transition duration-300 border border-blue-400/30">Submit Feedback</a>
+            <a href="display.html" class="text-white px-4 py-2 bg-green-500/30 rounded-lg hover:bg-green-500/50 transition duration-300 border border-green-400/30">View Feedback</a>
+        </div>
+    </nav>
+
+    <!-- Feedback Form -->
+    <div class="container mx-auto p-4 md:p-6">
+        <h2 class="text-3xl font-bold text-center mb-8 neon-text">Submit Feedback</h2>
+        <form class="glass-card p-6 rounded-xl shadow-2xl" id="feedbackForm">
+            <div class="mb-4">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-input w-full p-2 rounded-lg" id="name" required>
+            </div>
+            <div class="mb-4">
+                <label for="email" class="form-label">Email (Optional)</label>
+                <input type="email" class="form-input w-full p-2 rounded-lg" id="email">
+            </div>
+            <div class="mb-4">
+                <label for="designation" class="form-label">Designation</label>
+                <select class="form-input w-full p-2 rounded-lg" id="designation" required>
+                    <option value="Project Head">Project Head</option>
+                    <option value="Operations Manager">Operations Manager</option>
+                    <option value="Zonal Manager">Zonal Manager</option>
+                    <option value="Supervisor">Supervisor</option>
+                    <option value="Colleague">Colleague</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="feedback" class="form-label">Feedback</label>
+                <textarea class="form-input w-full p-2 rounded-lg" id="feedback" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary w-full py-2 rounded-lg">Submit</button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="glass-card p-4 rounded-lg mt-4 text-center text-green-400 hidden">
+            Feedback submitted successfully!
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-card mt-12 p-4 rounded-lg mx-4 md:mx-6 text-center">
+        <p class="text-gray-400">&copy; 2025 InsightFlow. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Firebase and Three.js Scripts -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8XIXxe2cBliFB4HN2C8GsYpQ1beErPv8",
+            authDomain: "insightflow-81a03.firebaseapp.com",
+            databaseURL: "https://insightflow-81a03-default-rtdb.firebaseio.com",
+            projectId: "insightflow-81a03",
+            storageBucket: "insightflow-81a03.appspot.com",
+            messagingSenderId: "111041243564",
+            appId: "1:111041243564:web:f9348e510ea7e1e7e13209",
+            measurementId: "G-P0HQ3MXXV1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Three.js Background
+        let scene, camera, renderer, particles;
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Particles
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            for (let i = 0; i < 5000; i++) {
+                vertices.push(
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000,
+                    Math.random() * 2000 - 1000
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.PointsMaterial({ size: 2, color: 0x00aaff });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.z = 1000;
+
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.x += 0.0001;
+                particles.rotation.y += 0.0001;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Handle feedback form submission
+        const feedbackForm = document.getElementById('feedbackForm');
+        const successMessage = document.getElementById('successMessage');
+
+        feedbackForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const designation = document.getElementById('designation').value;
+            const feedback = document.getElementById('feedback').value;
+
+            // Save to Firebase
+            db.ref('feedbacks').push({
+                name: name,
+                email: email || "Not provided",
+                designation: designation,
+                feedback: feedback
+            }).then(() => {
+                // Show success message and clear form
+                successMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    successMessage.classList.add('hidden');
+                }, 3000);
+                feedbackForm.reset();
+            }).catch((error) => {
+                console.error('Error saving feedback: ', error);
+                alert('Something went wrong. Please try again.');
+            });
+        });
+
+        // Initialize
+        window.onload = () => {
+            initThreeJS();
+        };
+    </script>
+</body>
+</html>
